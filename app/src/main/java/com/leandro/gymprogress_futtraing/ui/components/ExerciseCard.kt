@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -28,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,8 +56,20 @@ fun ExerciseCard(
 ) {
     var weightText by remember { mutableStateOf(exercise.weight.toString()) }
     var repsText by remember { mutableStateOf(exercise.reps.toString()) }
-    val hasChanges = weightText != exercise.weight.toString() || repsText != exercise.reps.toString()
+    var nameText by remember { mutableStateOf(exercise.name) }
+    val hasChanges = remember(weightText, repsText, nameText, exercise) {
+        val weightDiff = weightText.toDoubleOrNull() != exercise.weight
+        val repsDiff = repsText.toIntOrNull() != exercise.reps
+        val nameDiff = nameText.trim() != exercise.name.trim()
 
+        (weightDiff || repsDiff || nameDiff) && nameText.isNotBlank()
+    }
+
+    LaunchedEffect(exercise) {
+        weightText = exercise.weight.toString()
+        repsText = exercise.reps.toString()
+        nameText = exercise.name
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -86,11 +100,15 @@ fun ExerciseCard(
 
             // 2. CONTENIDO CENTRAL (Usa weight(1f) para ocupar el espacio sobrante)
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = exercise.name,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                BasicTextField(
+                    value = nameText,
+                    onValueChange = { nameText = it },
+                    textStyle = LocalTextStyle.current.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Row(modifier = Modifier.padding(top = 4.dp)) {
                     OutlinedTextField(
@@ -126,7 +144,7 @@ fun ExerciseCard(
                         onClick = {
                             val weight = weightText.toDoubleOrNull() ?: 0.0
                             val reps = repsText.toIntOrNull() ?: 0
-                            onUpdate(exercise.copy(weight = weight, reps = reps))
+                            onUpdate(exercise.copy(name = nameText.trim(),weight = weight, reps = reps))
                         }
                     ) {
                         Icon(

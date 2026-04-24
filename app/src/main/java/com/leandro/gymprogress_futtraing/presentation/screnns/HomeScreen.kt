@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -23,13 +25,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leandro.gymprogress_futtraing.presentation.viewmodel.GymViewModel
 import com.leandro.gymprogress_futtraing.ui.components.ExerciseCard
 import com.leandro.gymprogress_futtraing.ui.components.ProfileHeader
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
@@ -38,7 +43,9 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
     val tabs = listOf("Piernas", "Torso")
 
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -46,6 +53,7 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
         selectedImageUri = uri
     }
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
 
             ProfileHeader(
@@ -85,14 +93,24 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(currentExercises) { exercise ->
+                items(currentExercises,key = { it.id ?:0 }) { exercise ->
                     ExerciseCard(
                         exercise = exercise,
                         onDelete = { viewModel.onDeleteExercise(it) },
-                        onUpdate = { viewModel.onUpdateExercise(it) }
+                        onUpdate = { updatedExercise ->
+                            viewModel.onUpdateExercise(updatedExercise)
+                            focusManager.clearFocus() // 1. Quita el teclado y el foco
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Progreso guardado") // 2. Muestra el mensaje
+                            } }
                     )
                 }
             }
         }
     }
+}
+
+@Composable
+fun SnackbarHostState() {
+    TODO("Not yet implemented")
 }
