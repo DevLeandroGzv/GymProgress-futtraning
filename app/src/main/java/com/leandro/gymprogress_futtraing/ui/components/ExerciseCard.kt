@@ -22,6 +22,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +44,9 @@ fun ExerciseCard(
     onDelete: (Exercise) -> Unit,
     onUpdate: (Exercise) -> Unit
 ) {
+    var weightText by remember { mutableStateOf(exercise.weight.toString()) }
+    var repsText by remember { mutableStateOf(exercise.reps.toString()) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,21 +80,39 @@ fun ExerciseCard(
                 )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Campo para Peso
                     OutlinedTextField(
-                        value = exercise.weight.toString(),
-                        onValueChange = { /* Lógica de actualización aquí */ },
+                        value = weightText,
+                        onValueChange = { newValue ->
+                            // Permitimos solo números y un punto decimal
+                            if (newValue.isEmpty() || newValue.toDoubleOrNull() != null) {
+                                weightText = newValue
+                                // 2. Actualizamos la base de datos si es un número válido
+                                newValue.toDoubleOrNull()?.let {
+                                    onUpdate(exercise.copy(weight = it))
+                                }
+                            }
+                        },
                         label = { Text("Kg") },
-                        modifier = Modifier.width(80.dp),
+                        modifier = Modifier.width(90.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
+
                     Spacer(modifier = Modifier.width(8.dp))
+
                     // Campo para Repeticiones
                     OutlinedTextField(
-                        value = exercise.reps.toString(),
-                        onValueChange = { /* Lógica de actualización aquí */ },
+                        value = repsText,
+                        onValueChange = { newValue ->
+                            if (newValue.isEmpty() || newValue.toIntOrNull() != null) {
+                                repsText = newValue
+                                // 2. Actualizamos la base de datos
+                                newValue.toIntOrNull()?.let {
+                                    onUpdate(exercise.copy(reps = it))
+                                }
+                            }
+                        },
                         label = { Text("Reps") },
-                        modifier = Modifier.width(80.dp),
+                        modifier = Modifier.width(90.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }

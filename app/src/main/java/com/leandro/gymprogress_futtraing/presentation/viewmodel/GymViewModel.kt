@@ -62,9 +62,8 @@ class GymViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateExercise(exercise: Exercise, newWeight: Double, newReps: Int) {
+    fun onUpdateExercise(updatedExercise: Exercise) {
         viewModelScope.launch {
-            val updatedExercise = exercise.copy(weight = newWeight, reps = newReps)
             updateExerciseUseCase(updatedExercise)
         }
     }
