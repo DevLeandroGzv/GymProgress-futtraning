@@ -9,9 +9,9 @@ lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.8.2"
 composeBom = "2024.02.01"
 
-# Nuevas versiones compatibles para el proyecto
-ksp = "2.0.21-1.0.25"  # Debe coincidir exactamente con tu versión de Kotlin
-hilt = "2.51.1"        # Versión estable compatible con K2
+
+ksp = "2.0.21-1.0.25"
+hilt = "2.51.1"
 room = "2.6.1"
 coil = "2.6.0"
 hiltNavigation = "1.2.0"
