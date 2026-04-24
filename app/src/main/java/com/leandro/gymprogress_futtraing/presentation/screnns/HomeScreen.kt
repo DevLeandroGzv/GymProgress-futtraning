@@ -89,7 +89,7 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
                     ExerciseCard(
                         exercise = exercise,
                         onDelete = { viewModel.onDeleteExercise(it) },
-                        onUpdate = { /* Implementaremos esto luego */ }
+                        onUpdate = { viewModel.onUpdateExercise(it) }
                     )
                 }
             }

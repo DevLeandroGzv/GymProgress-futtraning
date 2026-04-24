@@ -1,7 +1,9 @@
 package com.leandro.gymprogress_futtraing.ui.components
 
 import android.R
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,15 +11,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -33,7 +39,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.leandro.gymprogress_futtraing.domain.model.Exercise
 
@@ -46,6 +54,7 @@ fun ExerciseCard(
 ) {
     var weightText by remember { mutableStateOf(exercise.weight.toString()) }
     var repsText by remember { mutableStateOf(exercise.reps.toString()) }
+    val hasChanges = weightText != exercise.weight.toString() || repsText != exercise.reps.toString()
 
     Card(
         modifier = Modifier
@@ -59,71 +68,82 @@ fun ExerciseCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Imagen redonda de la máquina/ejercicio
-            AsyncImage(
-                model = exercise.imageUrl ?: R.drawable.btn_default,
-                contentDescription = null,
+            // 1. IMAGEN (Tamaño fijo, no se mueve)
+            Box(
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(50.dp)
                     .clip(CircleShape)
-                    .border(1.dp, Color.Gray, CircleShape),
-                contentScale = ContentScale.Crop
-            )
+                    .background(Color.LightGray)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AccountBox,
+                    contentDescription = null,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
+            // 2. CONTENIDO CENTRAL (Usa weight(1f) para ocupar el espacio sobrante)
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = exercise.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.padding(top = 4.dp)) {
                     OutlinedTextField(
                         value = weightText,
-                        onValueChange = { newValue ->
-                            // Permitimos solo números y un punto decimal
-                            if (newValue.isEmpty() || newValue.toDoubleOrNull() != null) {
-                                weightText = newValue
-                                // 2. Actualizamos la base de datos si es un número válido
-                                newValue.toDoubleOrNull()?.let {
-                                    onUpdate(exercise.copy(weight = it))
-                                }
-                            }
-                        },
+                        onValueChange = { weightText = it },
                         label = { Text("Kg") },
-                        modifier = Modifier.width(90.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        modifier = Modifier.width(70.dp), // Un poco más estrecho
+                        textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true
                     )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    // Campo para Repeticiones
+                    Spacer(modifier = Modifier.width(4.dp))
                     OutlinedTextField(
                         value = repsText,
-                        onValueChange = { newValue ->
-                            if (newValue.isEmpty() || newValue.toIntOrNull() != null) {
-                                repsText = newValue
-                                // 2. Actualizamos la base de datos
-                                newValue.toIntOrNull()?.let {
-                                    onUpdate(exercise.copy(reps = it))
-                                }
-                            }
-                        },
+                        onValueChange = { repsText = it },
                         label = { Text("Reps") },
-                        modifier = Modifier.width(90.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        modifier = Modifier.width(70.dp), // Un poco más estrecho
+                        textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true
                     )
                 }
             }
 
-            IconButton(onClick = { onDelete(exercise) }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar",
-                    tint = MaterialTheme.colorScheme.error
-                )
+            // 3. SECCIÓN DE BOTONES (Tamaño fijo a la derecha)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.wrapContentWidth()
+            ) {
+                // Usamos un Box animado o simplemente visibilidad para el Check
+                if (hasChanges) {
+                    IconButton(
+                        onClick = {
+                            val weight = weightText.toDoubleOrNull() ?: 0.0
+                            val reps = repsText.toIntOrNull() ?: 0
+                            onUpdate(exercise.copy(weight = weight, reps = reps))
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Guardar",
+                            tint = Color(0xFF4CAF50)
+                        )
+                    }
+                }
+
+                IconButton(onClick = { onDelete(exercise) }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }
