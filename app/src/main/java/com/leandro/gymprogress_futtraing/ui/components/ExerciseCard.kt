@@ -15,10 +15,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.leandro.gymprogress_futtraing.domain.model.Exercise
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseCard(
     exercise: Exercise,
@@ -52,7 +54,7 @@ fun ExerciseCard(
         ) {
             // Imagen redonda de la máquina/ejercicio
             AsyncImage(
-                model = exercise.imageUrl ?: R.drawable.ic_placeholder_machine,
+                model = exercise.imageUrl ?: R.drawable.btn_default,
                 contentDescription = null,
                 modifier = Modifier
                     .size(60.dp)

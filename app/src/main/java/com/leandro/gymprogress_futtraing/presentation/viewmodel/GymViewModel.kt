@@ -6,6 +6,7 @@ import com.leandro.gymprogress_futtraing.domain.model.Exercise
 import com.leandro.gymprogress_futtraing.domain.use_case.AddExerciseUseCase
 import com.leandro.gymprogress_futtraing.domain.use_case.DeleteExerciseUseCase
 import com.leandro.gymprogress_futtraing.domain.use_case.GetExercisesUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class GymViewModel @Inject constructor(
     private val getExercisesUseCase: GetExercisesUseCase,
     private val addExerciseUseCase: AddExerciseUseCase,

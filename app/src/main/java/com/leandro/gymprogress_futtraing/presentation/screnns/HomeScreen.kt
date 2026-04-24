@@ -35,7 +35,7 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
 
     Scaffold(
         topBar = {
-            // El perfil que siempre aparece
+
             ProfileHeader(
                 name = state.userName,
                 weight = state.userWeight,
@@ -44,7 +44,7 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                // Por ahora agregamos uno de prueba para testear Room
+
                 val group = if (selectedTabIndex == 0) "PIERNA" else "TORSO"
                 viewModel.onAddExercise("Nuevo Ejercicio", group)
             }) {
@@ -53,7 +53,7 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            // Pestañas para cambiar de rutina
+
             TabRow(selectedTabIndex = selectedTabIndex) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
