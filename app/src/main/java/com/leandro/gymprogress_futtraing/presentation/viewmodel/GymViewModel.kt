@@ -6,6 +6,7 @@ import com.leandro.gymprogress_futtraing.domain.model.Exercise
 import com.leandro.gymprogress_futtraing.domain.use_case.AddExerciseUseCase
 import com.leandro.gymprogress_futtraing.domain.use_case.DeleteExerciseUseCase
 import com.leandro.gymprogress_futtraing.domain.use_case.GetExercisesUseCase
+import com.leandro.gymprogress_futtraing.domain.use_case.UpdateExerciseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class GymViewModel @Inject constructor(
     private val getExercisesUseCase: GetExercisesUseCase,
     private val addExerciseUseCase: AddExerciseUseCase,
-    private val deleteExerciseUseCase: DeleteExerciseUseCase
+    private val deleteExerciseUseCase: DeleteExerciseUseCase,
+    private val updateExerciseUseCase: UpdateExerciseUseCase
 
     ) : ViewModel() {
 
@@ -57,6 +59,13 @@ class GymViewModel @Inject constructor(
     fun onDeleteExercise(exercise: Exercise) {
         viewModelScope.launch {
             deleteExerciseUseCase(exercise)
+        }
+    }
+
+    fun onUpdateExercise(exercise: Exercise, newWeight: Double, newReps: Int) {
+        viewModelScope.launch {
+            val updatedExercise = exercise.copy(weight = newWeight, reps = newReps)
+            updateExerciseUseCase(updatedExercise)
         }
     }
 }

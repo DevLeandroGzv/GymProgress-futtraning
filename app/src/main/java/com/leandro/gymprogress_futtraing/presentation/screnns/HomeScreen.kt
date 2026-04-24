@@ -1,5 +1,8 @@
 package com.leandro.gymprogress_futtraing.presentation.screnns
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -33,13 +37,23 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Piernas", "Torso")
 
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectedImageUri = uri
+    }
     Scaffold(
         topBar = {
 
             ProfileHeader(
                 name = state.userName,
                 weight = state.userWeight,
-                height = state.userHeight
+                height = state.userHeight,
+                imageUri = selectedImageUri?.toString(), // Le pasamos la nueva imagen
+                onAvatarClick = { photoPickerLauncher.launch("image/*") }
             )
         },
         floatingActionButton = {

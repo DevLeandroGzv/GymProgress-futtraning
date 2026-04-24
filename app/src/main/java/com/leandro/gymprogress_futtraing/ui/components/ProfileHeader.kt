@@ -1,6 +1,7 @@
 package com.leandro.gymprogress_futtraing.ui.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,7 +29,8 @@ fun ProfileHeader(
     name: String,
     weight: String,
     height: String,
-    imageUri: String? = null
+    imageUri: String? = null,
+    onAvatarClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -37,11 +41,12 @@ fun ProfileHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = imageUri ?: "https://via.placeholder.com/150", // Imagen por defecto
+                model = imageUri ?: Icons.Default.Person,
                 contentDescription = "Avatar",
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
+                    .clickable { onAvatarClick() } // <--- Ahora es interactivo
                     .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
                 contentScale = ContentScale.Crop
             )
