@@ -2,6 +2,9 @@ package com.leandro.gymprogress_futtraing.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.leandro.gymprogress_futtraing.domain.model.Exercise
+import com.leandro.gymprogress_futtraing.domain.use_case.AddExerciseUseCase
+import com.leandro.gymprogress_futtraing.domain.use_case.DeleteExerciseUseCase
 import com.leandro.gymprogress_futtraing.domain.use_case.GetExercisesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +15,8 @@ import javax.inject.Inject
 
 class GymViewModel @Inject constructor(
     private val getExercisesUseCase: GetExercisesUseCase,
+    private val addExerciseUseCase: AddExerciseUseCase,
+    private val deleteExerciseUseCase: DeleteExerciseUseCase
 
     ) : ViewModel() {
 
@@ -33,6 +38,23 @@ class GymViewModel @Inject constructor(
             getExercisesUseCase("TORSO").collect { list ->
                 _state.update { it.copy(torsoExercises = list) }
             }
+        }
+    }
+    fun onAddExercise(name: String, group: String) {
+        viewModelScope.launch {
+            val newExercise = Exercise(
+                name = name,
+                muscleGroup = group,
+                weight = 0.0,
+                reps = 0
+            )
+            addExerciseUseCase(newExercise)
+        }
+    }
+
+    fun onDeleteExercise(exercise: Exercise) {
+        viewModelScope.launch {
+            deleteExerciseUseCase(exercise)
         }
     }
 }
