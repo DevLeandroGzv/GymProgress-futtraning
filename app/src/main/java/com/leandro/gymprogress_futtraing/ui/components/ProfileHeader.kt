@@ -1,7 +1,9 @@
 package com.leandro.gymprogress_futtraing.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -42,22 +45,32 @@ fun ProfileHeader(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (!imageUri.isNullOrEmpty()) {
-                // Si tenemos una URI, usamos Coil
-                AsyncImage(
-                    model = imageUri,
-                    contentDescription = "Avatar",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                // Si es null o vacío, usamos un Icono vectorial estándar
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Default Avatar",
-                    modifier = Modifier.size(40.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .background(Color.LightGray)
+                    .clickable { onAvatarClick() } // <-- ¡Hacemos que el círculo sea clicable!
+                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                if (!imageUri.isNullOrEmpty()) {
+                    // Si tenemos una URI, usamos Coil
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = "Avatar",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // Si es null o vacío, usamos un Icono vectorial estándar
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Default Avatar",
+                        modifier = Modifier.size(40.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {

@@ -2,6 +2,7 @@ package com.leandro.gymprogress_futtraing.presentation.screnns
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,10 +49,11 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
     val focusManager = LocalFocusManager.current
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
         selectedImageUri = uri
     }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
@@ -61,7 +63,9 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
                 weight = state.userWeight,
                 height = state.userHeight,
                 imageUri = selectedImageUri?.toString(), // Le pasamos la nueva imagen
-                onAvatarClick = { photoPickerLauncher.launch("image/*") }
+                onAvatarClick = { photoPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )}
             )
         },
         floatingActionButton = {
