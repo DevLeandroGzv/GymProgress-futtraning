@@ -179,7 +179,7 @@ fun ExerciseCard(
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    
+
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()

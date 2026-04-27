@@ -3,12 +3,16 @@ package com.leandro.gymprogress_futtraing.presentation.viewmodel
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.leandro.gymprogress_futtraing.data.remote.ExerciseDto
 import com.leandro.gymprogress_futtraing.domain.model.Exercise
 import com.leandro.gymprogress_futtraing.domain.use_case.AddExerciseUseCase
 import com.leandro.gymprogress_futtraing.domain.use_case.DeleteExerciseUseCase
+import com.leandro.gymprogress_futtraing.domain.use_case.GetApiExercisesUseCase
 import com.leandro.gymprogress_futtraing.domain.use_case.GetExercisesUseCase
 import com.leandro.gymprogress_futtraing.domain.use_case.UpdateExerciseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +33,7 @@ class GymViewModel @Inject constructor(
     private val addExerciseUseCase: AddExerciseUseCase,
     private val deleteExerciseUseCase: DeleteExerciseUseCase,
     private val updateExerciseUseCase: UpdateExerciseUseCase,
+    private val getApiExercisesUseCase: GetApiExercisesUseCase,
     private val preferences: SharedPreferences
 
 
@@ -37,6 +42,12 @@ class GymViewModel @Inject constructor(
     private val _state = MutableStateFlow(GymUiState())
     val state: StateFlow<GymUiState> = _state.asStateFlow()
     var profileImageUri = mutableStateOf(preferences.getString("profile_uri", null))
+        private set
+
+    var apiExercises by mutableStateOf<List<ExerciseDto>>(emptyList())
+        private set
+
+    var isSearching by mutableStateOf(false)
         private set
 
     init {
@@ -81,6 +92,17 @@ class GymViewModel @Inject constructor(
     fun onUpdateExercise(updatedExercise: Exercise) {
         viewModelScope.launch {
             updateExerciseUseCase(updatedExercise)
+        }
+    }
+
+    fun searchExternalExercises(muscle: String) {
+        viewModelScope.launch {
+            isSearching = true
+            val result = getApiExercisesUseCase(muscle)
+            result.onSuccess {
+                apiExercises = it
+            }
+            isSearching = false
         }
     }
 

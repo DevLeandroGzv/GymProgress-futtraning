@@ -1,5 +1,6 @@
 package com.leandro.gymprogress_futtraing.domain.repository
 
+import com.leandro.gymprogress_futtraing.data.remote.ExerciseDto
 import com.leandro.gymprogress_futtraing.domain.model.Exercise
 import kotlinx.coroutines.flow.Flow
 

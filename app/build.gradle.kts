@@ -70,4 +70,8 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    //retrofit
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.gson)
 }

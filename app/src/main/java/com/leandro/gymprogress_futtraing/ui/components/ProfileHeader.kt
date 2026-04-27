@@ -50,7 +50,7 @@ fun ProfileHeader(
                     .size(80.dp)
                     .clip(CircleShape)
                     .background(Color.LightGray)
-                    .clickable { onAvatarClick() } // <-- ¡Hacemos que el círculo sea clicable!
+                    .clickable { onAvatarClick() }
                     .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
@@ -63,7 +63,7 @@ fun ProfileHeader(
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    // Si es null o vacío, usamos un Icono vectorial estándar
+
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Default Avatar",
