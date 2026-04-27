@@ -1,12 +1,17 @@
 package com.leandro.gymprogress_futtraing.ui.components
 
 import android.R
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +22,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
@@ -39,12 +45,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.leandro.gymprogress_futtraing.core.saveImageToInternalStorage
 import com.leandro.gymprogress_futtraing.domain.model.Exercise
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,6 +71,19 @@ fun ExerciseCard(
         val nameDiff = nameText.trim() != exercise.name.trim()
 
         (weightDiff || repsDiff || nameDiff) && nameText.isNotBlank()
+    }
+    val context = LocalContext.current
+    var isImageExpanded by remember { mutableStateOf(false) }
+    val exercisePhotoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+
+            val internalPath = saveImageToInternalStorage(context, it)
+            if (internalPath != null) {
+                onUpdate(exercise.copy(imageUrl = internalPath))
+            }
+        }
     }
 
     LaunchedEffect(exercise) {
@@ -85,15 +106,39 @@ fun ExerciseCard(
             // 1. IMAGEN (Tamaño fijo, no se mueve)
             Box(
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(50.dp) // Tamaño fijo SIEMPRE
                     .clip(CircleShape)
-                    .background(Color.LightGray)
+                    .background(MaterialTheme.colorScheme.surfaceVariant) // Un gris suave
+                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .clickable {
+                        if (exercise.imageUrl != null) {
+                            isImageExpanded = true // Zoom si hay foto
+                        } else {
+                            // Elegir foto si no hay
+                            exercisePhotoLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        }
+                    }
             ) {
-                Icon(
-                    imageVector = Icons.Default.AccountBox,
-                    contentDescription = null,
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                if (exercise.imageUrl != null) {
+                    // Si hay foto, la ponemos
+                    AsyncImage(
+                        model = exercise.imageUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // SI NO HAY FOTO, ponemos un icono por defecto
+                    Icon(
+                        // Puedes usar FitnessCenter o AddAPhoto
+                        imageVector = Icons.Default.AccountBox,
+                        contentDescription = "Añadir foto",
+                        modifier = Modifier.size(24.dp).align(Alignment.Center),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -161,6 +206,28 @@ fun ExerciseCard(
                         contentDescription = "Eliminar",
                         tint = MaterialTheme.colorScheme.error
                     )
+                }
+                if (isImageExpanded && exercise.imageUrl != null) {
+                    // Usamos un Box que ocupa toda la pantalla con fondo semitransparente
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.8f))
+                            .clickable { isImageExpanded = false }, // Cerrar zoom al tocar
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Card(
+                            modifier = Modifier.size(300.dp), // Tamaño grande para el zoom
+                            elevation = CardDefaults.cardElevation(8.dp)
+                        ) {
+                            AsyncImage(
+                                model = exercise.imageUrl,
+                                contentDescription = "Zoom ejercicio",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Fit // Ajustar sin recortar
+                            )
+                        }
+                    }
                 }
             }
         }

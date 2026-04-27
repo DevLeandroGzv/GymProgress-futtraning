@@ -1,5 +1,6 @@
 package com.leandro.gymprogress_futtraing.presentation.screnns
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -29,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,11 +49,22 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
-
+    val context = LocalContext.current
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
-        selectedImageUri = uri
+        uri?.let {
+        try {
+            val contentResolver = context.contentResolver
+            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            contentResolver.takePersistableUriPermission(it, takeFlags)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        selectedImageUri = it
+        // Aquí deberías llamar a un método del ViewModel para guardar esta URI en SharedPreferences
+        viewModel.saveProfileImage(it.toString())
+    }
     }
 
     Scaffold(
@@ -62,7 +75,7 @@ fun HomeScreen(viewModel: GymViewModel = hiltViewModel()) {
                 name = state.userName,
                 weight = state.userWeight,
                 height = state.userHeight,
-                imageUri = selectedImageUri?.toString(), // Le pasamos la nueva imagen
+                imageUri = viewModel.profileImageUri.value,
                 onAvatarClick = { photoPickerLauncher.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )}

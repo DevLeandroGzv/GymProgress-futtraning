@@ -1,6 +1,8 @@
 package com.leandro.gymprogress_futtraing.di
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.leandro.gymprogress_futtraing.data.GymDatabase
 import com.leandro.gymprogress_futtraing.domain.repository.ExerciseRepository
@@ -30,5 +32,11 @@ object AppModule {
     fun provideExerciseRepository(db: GymDatabase): ExerciseRepository {
 
         return ExcerciseRepositoryImpl(db.exerciseDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(app: Application): SharedPreferences {
+        return app.getSharedPreferences("gym_prefs", Context.MODE_PRIVATE)
     }
 }
