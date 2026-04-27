@@ -57,6 +57,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation(libs.kotlin.coroutines.play.services)
 
     // Room
     implementation(libs.room.runtime)
@@ -74,4 +75,7 @@ dependencies {
     //retrofit
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.gson)
+
+    //Ml kit
+    implementation(libs.mlkit.translate)
 }

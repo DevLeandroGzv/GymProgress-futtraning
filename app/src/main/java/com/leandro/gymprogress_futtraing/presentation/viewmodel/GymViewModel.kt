@@ -1,13 +1,12 @@
 package com.leandro.gymprogress_futtraing.presentation.viewmodel
 
-import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.leandro.gymprogress_futtraing.core.TranslationManager
 import com.leandro.gymprogress_futtraing.data.remote.ExerciseDto
 import com.leandro.gymprogress_futtraing.domain.model.Exercise
 import com.leandro.gymprogress_futtraing.domain.use_case.AddExerciseUseCase
@@ -21,10 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -99,8 +94,16 @@ class GymViewModel @Inject constructor(
         viewModelScope.launch {
             isSearching = true
             val result = getApiExercisesUseCase(muscle)
-            result.onSuccess {
-                apiExercises = it
+
+            result.onSuccess { list ->
+                // Traducimos cada ejercicio de la lista
+                val translatedList = list.map { ex ->
+                    ex.copy(
+                        name = TranslationManager.translateText(ex.name),
+                        instructions = TranslationManager.translateText(ex.instructions)
+                    )
+                }
+                apiExercises = translatedList
             }
             isSearching = false
         }

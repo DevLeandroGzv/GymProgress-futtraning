@@ -33,7 +33,7 @@ fun ApiExerciseCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(exercise.name.uppercase(), fontWeight = FontWeight.Bold)
-                    Text("Equipo: ${exercise.instructions}", style = MaterialTheme.typography.bodySmall)
+                    Text("informacion: ${exercise.instructions}", style = MaterialTheme.typography.bodySmall)
                 }
                 IconButton(onClick = onAddClick) {
                     Icon(Icons.Default.AddCircle, contentDescription = "Importar", tint = MaterialTheme.colorScheme.primary)

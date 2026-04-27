@@ -16,6 +16,8 @@ room = "2.6.1"
 coil = "2.6.0"
 hiltNavigation = "1.2.0"
 retrofit = "2.9.0"
+mlkit-translation = "17.0.1"
+kotlinx-coroutines-play-services = "1.7.3"
 
 
 [libraries]
@@ -42,6 +44,8 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+mlkit-translate = { group = "com.google.mlkit", name = "translate", version.ref = "mlkit-translation" }
+kotlin-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines-play-services" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
